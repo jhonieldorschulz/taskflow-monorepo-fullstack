@@ -1,0 +1,83 @@
+version: '3.8'
+
+networks:
+  taskflow-network:
+    driver: bridge
+
+services:
+  postgres:
+    image: postgres:15
+    networks:
+      taskflow-network:
+        aliases:
+          - postgres-db
+    environment:
+      POSTGRES_USER: taskadmin
+      POSTGRES_PASSWORD: taskpass
+      POSTGRES_DB: taskflow
+    ports:
+      - '5432:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U taskadmin -d taskflow']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  pgadmin:
+    image: dpage/pgadmin4
+    networks:
+      - taskflow-network
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@taskflow.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - '8081:80'
+    depends_on:
+      - postgres
+
+  backend:
+    build: ./backend
+    networks:
+      taskflow-network:
+        aliases:
+          - backend-api
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-db:5432/taskflow
+      SPRING_DATASOURCE_USERNAME: taskadmin
+      SPRING_DATASOURCE_PASSWORD: taskpass
+    ports:
+      - '8080:8080'
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend-angular:
+    build: ./frontend-angular
+    networks:
+      taskflow-network:
+        aliases:
+          - angular-app
+    environment:
+      API_URL: http://backend-api:8080/api
+    ports:
+      - '4200:4200'
+    depends_on:
+      - backend
+
+  frontend-react:
+    build: ./frontend-react-next
+    networks:
+      taskflow-network:
+        aliases:
+          - react-app
+    environment:
+      NEXT_PUBLIC_API_URL: http://backend-api:8080/api
+    ports:
+      - '3000:3000'
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:
