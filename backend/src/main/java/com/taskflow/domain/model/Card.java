@@ -1,10 +1,16 @@
 package com.taskflow.domain.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+@Data
+@NoArgsConstructor
+@EqualsAndHashCode(of = {"id", "title", "taskList"})
 @Entity
 @Table(name = "cards")
 public class Card {
@@ -22,11 +28,11 @@ public class Card {
     @Column(nullable = false)
     private Integer position;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "list_id", nullable = false)
     private TaskList taskList;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assignee_id")
     private User assignee;
 
@@ -42,7 +48,7 @@ public class Card {
     @Column(name = "label")
     private Set<String> labels = new HashSet<>();
 
-    @Column(name = "created_at")
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at")

@@ -1,10 +1,18 @@
 package com.taskflow.domain.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+@Data
+@NoArgsConstructor
+@EqualsAndHashCode(of = {"id", "email"})
+@ToString(exclude = {"password", "workspaces"})
 @Entity
 @Table(name = "users")
 public class User {
@@ -22,7 +30,7 @@ public class User {
     @Column(nullable = false)
     private String name;
 
-    @Column(name = "created_at")
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at")

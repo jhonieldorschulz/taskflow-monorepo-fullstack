@@ -1,10 +1,18 @@
 package com.taskflow.domain.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Data
+@NoArgsConstructor
+@EqualsAndHashCode(of = {"id", "name", "board"})
+@ToString(exclude = {"cards"})
 @Entity
 @Table(name = "task_lists")
 public class TaskList {
@@ -19,7 +27,7 @@ public class TaskList {
     @Column(nullable = false)
     private Integer position;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id", nullable = false)
     private Board board;
 
@@ -27,7 +35,7 @@ public class TaskList {
     @OrderBy("position")
     private List<Card> cards = new ArrayList<>();
 
-    @Column(name = "created_at")
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
