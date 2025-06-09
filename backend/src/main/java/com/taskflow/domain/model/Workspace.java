@@ -1,22 +1,14 @@
 package com.taskflow.domain.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-@Data
-@NoArgsConstructor
-@EqualsAndHashCode(of = {"id", "name", "owner"})
-@ToString(exclude = {"members", "boards"})
 @Entity
 @Table(name = "workspaces")
 public class Workspace {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -35,14 +27,14 @@ public class Workspace {
     )
     private Set<User> members = new HashSet<>();
 
-    @OneToMany(mappedBy = "workspace", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "workspace", cascade = CascadeType.ALL)
     private Set<Board> boards = new HashSet<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
 
-    @Column(name = "created_at", updatable = false)
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
@@ -115,4 +107,4 @@ public class Workspace {
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
-} 
+}

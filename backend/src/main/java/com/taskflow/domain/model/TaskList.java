@@ -1,22 +1,14 @@
 package com.taskflow.domain.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
-@NoArgsConstructor
-@EqualsAndHashCode(of = {"id", "name", "board"})
-@ToString(exclude = {"cards"})
 @Entity
 @Table(name = "task_lists")
 public class TaskList {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,7 +19,7 @@ public class TaskList {
     @Column(nullable = false)
     private Integer position;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "board_id", nullable = false)
     private Board board;
 
@@ -35,7 +27,7 @@ public class TaskList {
     @OrderBy("position")
     private List<Card> cards = new ArrayList<>();
 
-    @Column(name = "created_at", updatable = false)
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
@@ -100,4 +92,4 @@ public class TaskList {
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
-} 
+}
